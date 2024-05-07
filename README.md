@@ -8,16 +8,16 @@ All these packages are built against the same CUDA version and validated with th
 ## System Requirements
 
 - **Operating System:**
-  - [Ubuntu 22.04](https://ubuntu.com/download/desktop)
+  - [Ubuntu 22.04](https://releases.ubuntu.com/22.04/?_gl=1*19ip6hm*_gcl_au*MTE4NTIyOTI0MS4xNzA3MTMxMDQx&_ga=2.149898549.2084151835.1707729318-1126754318.1683186906)
 
 - **Python:**
   - Python-3.10 (Should be pre-installed with Ubuntu 22.04)
 
 - **CUDA:**
-  - [CUDA Toolkit 12.2](https://developer.nvidia.com/cuda-downloads)
+  - [CUDA Toolkit 12.2](https://developer.nvidia.com/cuda-12-2-0-download-archive)
 
 - **NVIDIA Driver:**
-  - [Nvidia Driver-535.161.08](https://www.nvidia.cn/Download/driverResults.aspx/212056/en-us/)
+  - [Nvidia Driver-535.161.08](https://www.nvidia.cn/Download/driverResults.aspx/222416/en-us/)
 
 - **TensorRT:**
   - [TensorRT-8.6.1.6](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html#downloading)
