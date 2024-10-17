@@ -84,13 +84,9 @@ cd /tmp
 wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 
-# Install tao-converter which parses the .etlt model file, and generates an optimized TensorRT engine
-wget 'https://api.ngc.nvidia.com/v2/resources/nvidia/tao/tao-converter/versions/v4.0.0_trt8.5.1.7_x86/files/tao-converter' --directory-prefix=/usr/local/bin
-chmod a+x /usr/local/bin/tao-converter
-
 # Install NVIDIA NSIGHT 2023.2.1
 cd /tmp
-wget https://developer.download.nvidia.com/devtools/nsight-systems/nsight-systems-2023.2.1_2023.2.1.122-1_amd64.deb
+wget https://developer.download.nvidia.com/devtools/nsight-systems/nsight-systems-2024.2.1_2024.2.1.106-1_amd64.deb
 apt-get update && apt-get install -y \
     libsm6 \
     libxrender1 \
@@ -98,12 +94,12 @@ apt-get update && apt-get install -y \
     libxext6 \
     libx11-dev \
     libxkbfile-dev \
-    /tmp/nsight-systems-2023.2.1_2023.2.1.122-1_amd64.deb \
+    /tmp/nsight-systems-2024.2.1_2024.2.1.106-1_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
 echo "export PATH=$PATH:/opt/tensorrt/bin" >> ~/.bashrc
-export CPATH=$CPATH:/usr/local/cuda-12.2/targets/x86_64-linux/include
-export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-12.2/targets/x86_64-linux/lib
+export CPATH=$CPATH:/usr/local/cuda-12.6/targets/x86_64-linux/include
+export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-12.6/targets/x86_64-linux/lib
 export PATH=/usr/local/cuda/bin:$PATH
 
 # Upgrade pip and install all required Python packages.
@@ -120,14 +116,4 @@ cd /tmp
 pip3 install /tmp/VideoProcessingFramework
 pip3 install /tmp/VideoProcessingFramework/src/PytorchNvCodec
 
-# Install NvImageCodec
-# pip3 install nvidia-nvimgcodec-cu${CUDA_MAJOR_VERSION}
 pip3 install nvidia-pyindex
-# pip3 install nvidia-nvjpeg-cu${CUDA_MAJOR_VERSION}
-
-# Install NvPyVideoCodec
-# cd /tmp
-# wget --content-disposition https://api.ngc.nvidia.com/v2/resources/nvidia/py_nvvideocodec/versions/0.0.9/zip -O py_nvvideocodec_0.0.9.zip
-# pip3 install py_nvvideocodec_0.0.9.zip
-
-# Done

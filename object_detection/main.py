@@ -118,6 +118,7 @@ def run_sample(
         encoder.input_layout,
         encoder.gpu_input,
         batch_size,
+        backend,
         cvcuda_perf,
     )
 

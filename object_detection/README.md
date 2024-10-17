@@ -32,7 +32,7 @@ The application  logs comprehensive data throughout every operational phase. Upo
     ```
 - Run object detection  on folder containing images with TensorRT backend
     ```bash
-    python3 main.py --input_path ../assets/images/ --output_dir ./output --batch_size 2  --backend tensorrt
+    python3 main.py --input_path ../assets/images/ --output_dir ./output --batch_size 3  --backend tensorrt
     ```
 - Run object detection  on a video file with TensorFlow backend
     ```bash

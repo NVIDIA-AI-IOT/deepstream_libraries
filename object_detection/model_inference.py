@@ -135,10 +135,10 @@ class ObjectDetectionTensorRT:
         self.cvcuda_perf = cvcuda_perf
 
         # Download and prepare the models for the first use.
-        etlt_model_path = os.path.join(self.output_dir, "resnet34_peoplenet_int8.etlt")
+        onnx_model_path = os.path.join(self.output_dir, "resnet34_peoplenet.onnx")
         trt_engine_file_path = os.path.join(
             self.output_dir,
-            "resnet34_peoplenet_int8.%d.%d.%d.trtmodel"
+            "resnet34_peoplenet.%d.%d.%d.trtmodel"
             % (
                 batch_size,
                 image_size[1],
@@ -148,29 +148,29 @@ class ObjectDetectionTensorRT:
 
         # Check if we have a previously generated model.
         if not os.path.isfile(trt_engine_file_path):
-            if not os.path.isfile(etlt_model_path):
-                # We need to download the ETLE model first from NGC.
+            if not os.path.isfile(onnx_model_path):
+                # We need to download the OONX model first from NGC.
                 model_url = (
                     "https://api.ngc.nvidia.com/v2/models/"
-                    "nvidia/tao/peoplenet/versions/deployable_quantized_v2.6.1/"
-                    "files/resnet34_peoplenet_int8.etlt"
+                    "nvidia/tao/peoplenet/versions/deployable_quantized_onnx_v2.6.2/"
+                    "files/resnet34_peoplenet.onnx"
                 )
                 self.logger.info(
                     "Downloading the PeopleNet model from NGC: %s" % model_url
                 )
-                urllib.request.urlretrieve(model_url, etlt_model_path)
-                self.logger.info("Download complete. Saved to: %s" % etlt_model_path)
+                urllib.request.urlretrieve(model_url, onnx_model_path)
+                self.logger.info("Download complete. Saved to: %s" % onnx_model_path)
 
-            # Convert ETLE to TensorRT model using the TAO-Converter.
+            # Convert ONNX to TensorRT model using the TAO-Converter.
             self.logger.info("Converting the PeopleNet model to TensorRT...")
             if os.system(
-                "tao-converter -e %s -k tlt_encode -d 3,%d,%d -m %d -i nchw %s"
+                "/usr/src/tensorrt/bin/trtexec --onnx=%s --saveEngine=%s --minShapes='input_1:0':%dx3x544x960 --optShapes='input_1:0':%dx3x544x960 --maxShapes='input_1:0':%dx3x544x960 --skipInference"
                 % (
+                    onnx_model_path,
                     trt_engine_file_path,
-                    image_size[1],
-                    image_size[0],
                     batch_size,
-                    etlt_model_path,
+                    batch_size,
+                    batch_size
                 )
             ):
                 raise Exception("Conversion failed.")
@@ -192,7 +192,7 @@ class ObjectDetectionTensorRT:
 
         # We will allocate the output tensors and its bindings either when we
         # use it for the first time or when the batch size changes.
-        self.output_tensors, self.output_idx = None, None
+        self.output_tensors, self.output_layer_names = None, None
 
         self.logger.info("Using TensorRT as the inference engine.")
         # docs_tag: end_init_objectdetectiontensorrt
@@ -201,35 +201,34 @@ class ObjectDetectionTensorRT:
     def __call__(self, tensor):
         self.cvcuda_perf.push_range("inference.tensorrt")
 
-        # Grab the data directly from the pre-allocated tensor.
-        input_bindings = [tensor.cuda().__cuda_array_interface__["data"][0]]
-        output_bindings = []
-
         actual_batch_size = tensor.shape[0]
 
         # Need to allocate the output tensors
         if not self.output_tensors or actual_batch_size != self.batch_size:
-            self.output_tensors, self.output_idx = setup_tensort_bindings(
+            self.output_tensors, self.output_layer_names = setup_tensort_bindings(
                 self.trt_model,
                 actual_batch_size,
                 self.device_id,
                 self.logger,
             )
 
-        for t in self.output_tensors:
-            output_bindings.append(t.data_ptr())
-        io_bindings = input_bindings + output_bindings
+        # Grab the data directly from the pre-allocated tensor.
+        self.model.set_tensor_address("input_1:0", tensor.cuda().__cuda_array_interface__["data"][0])
+        for output_tensor, layer_name in zip(self.output_tensors,self.output_layer_names):
+            self.model.set_tensor_address(layer_name, output_tensor.data_ptr())
+
+        # Must call this before inference
+        assert self.model.set_input_shape("input_1:0", tensor.shape)
 
         # Call inference for implicit batch
-        self.model.execute_async(
-            actual_batch_size,
-            bindings=io_bindings,
+        self.model.execute_async_v3(
             stream_handle=cvcuda.Stream.current.handle,
         )
 
-        boxes = self.output_tensors[0]
-        score = self.output_tensors[1]
+        boxes = self.output_tensors[1]
+        score = self.output_tensors[0]
 
         self.cvcuda_perf.pop_range()  # inference.tensorrt
+
         return boxes, score
         # docs_tag: end_call_objectdetectiontensorrt

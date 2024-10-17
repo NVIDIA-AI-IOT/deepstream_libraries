@@ -54,7 +54,7 @@ Triton has different public [Docker images](https://catalog.ngc.nvidia.com/orgs/
 
 1. Launch the triton server
       ```bash
-      docker run --shm-size=1g --ulimit memlock=-1 -p 8000:8000 -p 8001:8001 -p 8002:8002 --ulimit stack=67108864 -ti --gpus '"device=0"' -v <deepstream_libraries_local_mount_path>:/deepstream_libraries -w /deepstream_libraries nvcr.io/nvidia/tritonserver:23.10-py3
+      docker run --shm-size=1g --ulimit memlock=-1 -p 8000:8000 -p 8001:8001 -p 8002:8002 --ulimit stack=67108864 -ti --gpus '"device=0"' -v <deepstream_libraries_local_mount_path>:/deepstream_libraries -w /deepstream_libraries nvcr.io/nvidia/tritonserver:24.08-py3
       ```
 
 2. DeepStream Libraries Installation [steps](../README.md#deepstream_libraries-installation)
@@ -70,7 +70,7 @@ Triton has different public [Docker images](https://catalog.ngc.nvidia.com/orgs/
 ### Triton Client instructions
 1. Launch the triton client docker
       ```bash
-      docker run -ti --net host --gpus '"device=0"' -v <deepstream_libraries_local_mount_path>:/deepstream_libraries -w /deepstream_libraries nvcr.io/nvidia/tritonserver:23.10-py3-sdk /bin/bash
+      docker run -ti --net host --gpus '"device=0"' -v <deepstream_libraries_local_mount_path>:/deepstream_libraries -w /deepstream_libraries nvcr.io/nvidia/tritonserver:24.08-py3-sdk /bin/bash
       ```
     In case the client and server are on the same machine in a local-server setup, we can simply reuse the server image (and even docker exec into the same container) by installing the Triton client utilities:
       ```bash

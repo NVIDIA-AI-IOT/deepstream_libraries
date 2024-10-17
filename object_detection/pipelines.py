@@ -101,6 +101,7 @@ class PostprocessorCvcuda:
         output_layout,
         gpu_output,
         batch_size,
+        backend,
         cvcuda_perf,
     ):
         # docs_tag: begin_init_postprocessorcvcuda
@@ -111,6 +112,7 @@ class PostprocessorCvcuda:
         self.output_layout = output_layout
         self.gpu_output = gpu_output
         self.batch_size = batch_size
+        self.backend = backend
         self.cvcuda_perf = cvcuda_perf
 
         # The Peoplenet model uses Gridbox system which divides an input image into a grid and
@@ -203,6 +205,9 @@ class PostprocessorCvcuda:
     def __call__(self, raw_boxes_pyt, raw_scores_pyt, frame_nhwc):
 
         self.cvcuda_perf.push_range("postprocess.cvcuda")
+        if self.backend == "tensorrt":
+            raw_boxes_pyt = torch.reshape(raw_boxes_pyt,(raw_boxes_pyt.shape[0],-1,raw_boxes_pyt.shape[3],raw_boxes_pyt.shape[4]))
+            raw_scores_pyt = torch.reshape(raw_scores_pyt,(raw_scores_pyt.shape[0],-1,raw_scores_pyt.shape[3],raw_scores_pyt.shape[4]))
 
         # docs_tag: begin_call_filterbboxcvcuda
         self.cvcuda_perf.push_range("interpolate")

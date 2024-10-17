@@ -89,7 +89,7 @@ cd object_detection
 # run_test "Object-Detection with default params" "python3 main.py"
 run_test "Object-Detection on a single image with batch size 1 with TensorRT backend" "python3 main.py --input_path ../assets/images/peoplenet.jpg --output_dir ./output --target_img_height 544 --target_img_width 960 --device_id 0 --backend tensorrt --confidence_threshold 0.9 --iou_threshold 0.2"
 run_test "Object-Detection on a single image with batch size 1 with TensorFlow backend" "python3 main.py --input_path ../assets/images/peoplenet.jpg --output_dir ./output --target_img_height 544 --target_img_width 960 --device_id 0 --backend tensorflow --confidence_threshold 0.9 --iou_threshold 0.2"
-run_test "Object-Detection on folder containing images with TensorRT backend" "python3 main.py --input_path ../assets/images/ --output_dir ./output --batch_size 2  --backend tensorrt"
+run_test "Object-Detection on folder containing images with TensorRT backend" "python3 main.py --input_path ../assets/images/ --output_dir ./output --batch_size 3  --backend tensorrt"
 run_test "Object-Detection on a video file with TensorRT backend" "python3 main.py --input_path ../assets/videos/pexels-chiel-slotman-4423925-1920x1080-25fps.mp4 --output_dir ./output --batch_size 2 --backend tensorrt"
 run_test "Object-Detection on a video file with TensorFlow backend" "python3 main.py --input_path ../assets/videos/pexels-chiel-slotman-4423925-1920x1080-25fps.mp4 --output_dir ./output --batch_size 2 --backend tensorflow"
 cd ..

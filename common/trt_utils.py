@@ -64,7 +64,6 @@ def convert_onnx_to_tensorrt(
         )  # Sets workspace size in GB.
         if builder.platform_has_fast_fp16:
             config.set_flag(trt.BuilderFlag.FP16)
-            config.set_flag(trt.BuilderFlag.STRICT_TYPES)
             trt_logger.log(trt.Logger.INFO, "Using precision : float16")
         else:
             trt_logger.log(trt.Logger.INFO, "Using precision : float32")
@@ -113,7 +112,7 @@ def setup_tensort_bindings(trt_model, batch_size, device_id, logger):
     # For TensorRT, we need to allocate the output data buffers.
     # The input data buffers are already allocated by us.
     output_binding_idx = 0
-    output_idx = 0
+    output_layer_names = []
     output_tensors = []
 
     # Loop over all the I/O bindings.
@@ -148,12 +147,9 @@ def setup_tensort_bindings(trt_model, batch_size, device_id, logger):
                 dtype=getattr(torch, b_dtype),
                 device="cuda:%d" % device_id,
             )
-            # Since we know the name of our output layer, we will check against
-            # it and grab its binding index.
-            if b_name == "output":
-                output_idx = output_binding_idx
 
             output_binding_idx += 1
             output_tensors.append(output)
+            output_layer_names.append(b_name)
 
-    return output_tensors, output_idx
+    return output_tensors, output_layer_names

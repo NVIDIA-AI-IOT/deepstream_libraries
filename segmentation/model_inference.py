@@ -232,7 +232,7 @@ class SegmentationTensorRT:
             self.model = trt_model.create_execution_context()
 
             # Allocate the output bindings.
-            self.output_tensors, self.output_idx = setup_tensort_bindings(
+            self.output_tensors, self.output_layer_names = setup_tensort_bindings(
                 trt_model,
                 batch_size,
                 self.device_id,
@@ -247,21 +247,18 @@ class SegmentationTensorRT:
         self.cvcuda_perf.push_range("inference.tensorrt")
 
         # Grab the data directly from the pre-allocated tensor.
-        input_bindings = [tensor.cuda().__cuda_array_interface__["data"][0]]
-        output_bindings = []
-        for t in self.output_tensors:
-            output_bindings.append(t.data_ptr())
-        io_bindings = input_bindings + output_bindings
+        self.model.set_tensor_address("input", tensor.cuda().__cuda_array_interface__["data"][0])
+        for output_tensor, layer_name in zip(self.output_tensors,self.output_layer_names):
+            self.model.set_tensor_address(layer_name, output_tensor.data_ptr())
 
         # Must call this before inference
-        binding_i = self.model.engine.get_binding_index("input")
-        assert self.model.set_binding_shape(binding_i, tensor.shape)
+        assert self.model.set_input_shape("input", tensor.shape)
 
-        self.model.execute_async_v2(
-            bindings=io_bindings, stream_handle=cvcuda.Stream.current.handle
+        self.model.execute_async_v3(
+            stream_handle=cvcuda.Stream.current.handle
         )
 
-        segmented = self.output_tensors[self.output_idx]
+        segmented = self.output_tensors[0]
 
         self.cvcuda_perf.pop_range()
         return segmented

@@ -190,7 +190,7 @@ def parse_nvtx_gpu_proj_trace_json(json_path):
         # Grab the necessary values from the JSON file.
         range_id = row["RangeId"]
 
-        if range_id == "None":
+        if not range_id or range_id == "None":
             continue
 
         flat_name = row["Name"]
@@ -857,7 +857,7 @@ def benchmark_script(
 
     # Setup the command that will launch nsys and ask it to benchmark the script
     # that we were interested in.
-    nsys_root_path = "/opt/nvidia/nsight-systems/2023.2.1/"
+    nsys_root_path = "/opt/nvidia/nsight-systems/2024.2.1/"
     nsys_binary_path = os.path.join(nsys_root_path, "bin/nsys")
     nsys_reports_path = os.path.join(nsys_root_path, "target-linux-x64/reports")
     nsys_gpu_proj_trace_report_path = os.path.join(
@@ -869,7 +869,7 @@ def benchmark_script(
 
     if not os.path.isfile(nsys_binary_path):
         raise ValueError(
-            "Unable to locate nsys binary at %s. Make sure you have nsight-systems 2023.2.1 installed."
+            "Unable to locate nsys binary at %s. Make sure you have nsight-systems 2024.2.1 installed."
             % nsys_binary_path
         )
 
