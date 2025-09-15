@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 ################################################################################
-# Copyright (c) 2024, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -51,13 +51,13 @@ apt-get update && apt-get install -y --no-install-recommends \
 # Add repositories and install g++
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt-get update && apt-get install -y --no-install-recommends \
-    gcc-11 g++-11 \
+    gcc-12 g++-12 \
     ninja-build \
     && rm -rf /var/lib/apt/lists/*
-update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
-update-alternatives --set gcc /usr/bin/gcc-11
-update-alternatives --set g++ /usr/bin/g++-11
+update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
+update-alternatives --set gcc /usr/bin/gcc-12
+update-alternatives --set g++ /usr/bin/g++-12
 
 # Install Python and gtest
 apt-get update && apt-get install -y --no-install-recommends \
@@ -84,9 +84,9 @@ cd /tmp
 wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 
-# Install NVIDIA NSIGHT 2023.2.1
+# Install NVIDIA NSIGHT 2024.6.1
 cd /tmp
-wget https://developer.download.nvidia.com/devtools/nsight-systems/nsight-systems-2024.2.1_2024.2.1.106-1_amd64.deb
+wget https://developer.download.nvidia.com/devtools/nsight-systems/nsight-systems-2024.6.1_2024.6.1.90-1_amd64.deb
 apt-get update && apt-get install -y \
     libsm6 \
     libxrender1 \
@@ -94,26 +94,10 @@ apt-get update && apt-get install -y \
     libxext6 \
     libx11-dev \
     libxkbfile-dev \
-    /tmp/nsight-systems-2024.2.1_2024.2.1.106-1_amd64.deb \
+    ./nsight-systems-2024.6.1_2024.6.1.90-1_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-echo "export PATH=$PATH:/opt/tensorrt/bin" >> ~/.bashrc
-export CPATH=$CPATH:/usr/local/cuda-12.6/targets/x86_64-linux/include
-export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-12.6/targets/x86_64-linux/lib
-export PATH=/usr/local/cuda/bin:$PATH
-
-# Upgrade pip and install all required Python packages.
-pip3 install --upgrade pip
-pip3 install -r "$SCRIPT_DIR/requirements.txt"
-
-# Install VPF
-cd /tmp
-[ ! -d 'VideoProcessingFramework' ] && git clone https://github.com/NVIDIA/VideoProcessingFramework.git
-# HotFix: Must change the PyTorch version used by PytorchNvCodec to match the one we are using.
-# # Since we are using 2.2.0 we must use that.
-# sed -i 's/torch/torch==2.2.0/g' /tmp/VideoProcessingFramework/src/PytorchNvCodec/pyproject.toml
-# sed -i 's/"torch"/"torch==2.2.0"/g' /tmp/VideoProcessingFramework/src/PytorchNvCodec/setup.py
-pip3 install /tmp/VideoProcessingFramework
-pip3 install /tmp/VideoProcessingFramework/src/PytorchNvCodec
-
-pip3 install nvidia-pyindex
+# Install venv
+apt-get update && apt-get install -y --no-install-recommends \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*

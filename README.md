@@ -8,48 +8,65 @@ All these packages are built against the same CUDA version and validated with th
 ## System Requirements
 
 - **Operating System:**
-  - [Ubuntu 22.04](https://releases.ubuntu.com/22.04/?_gl=1*19ip6hm*_gcl_au*MTE4NTIyOTI0MS4xNzA3MTMxMDQx&_ga=2.149898549.2084151835.1707729318-1126754318.1683186906)
+  - [Ubuntu 24.04](https://releases.ubuntu.com/noble/)
 
 - **Python:**
-  - Python-3.10 (Should be pre-installed with Ubuntu 22.04)
+  - Python-3.12 (Should be pre-installed with Ubuntu 24.04)
 
 - **CUDA:**
-  - [CUDA Toolkit 12.6](https://developer.nvidia.com/cuda-12-6-0-download-archive)
+  - [CUDA Toolkit 12.8](https://developer.nvidia.com/cuda-12-8-0-download-archive)
 
 - **NVIDIA Driver:**
-  - [Nvidia Driver-535.161.08](https://www.nvidia.cn/Download/driverResults.aspx/222416/en-us/)
+  - [Nvidia Driver-570.133.20](https://www.nvidia.cn/drivers/details/242548/)
 
 - **TensorRT:**
-  - [TensorRT-10.3.0.26](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html#downloading)
+  - [TensorRT-10.9](https://docs.nvidia.com/deeplearning/tensorrt/10.9.0/installing-tensorrt/overview.html)
+
+## DeepStream Libraries Repository Setup
+
+Follow these steps to set up your environment for running [sample applications](https://github.com/NVIDIA-AI-IOT/deepstream_libraries):
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/NVIDIA-AI-IOT/deepstream_libraries.git
+cd deepstream_libraries
+```
+
+### 2. Install System Dependencies
+```bash
+sudo sh scripts/install_sys_pkgs.sh
+```
+
+### 3. Download Sample Data
+```bash
+sh scripts/download_data.sh
+```
+
+### 4. Setup Python Virtual Environment
+```bash
+# Create virtual environment
+python3 -m venv deepstream_libraries_env
+
+# Activate virtual environment
+source deepstream_libraries_env/bin/activate
+
+# Verify activation
+which python3  # Should point to virtual environment
+```
+**Note:** Activate the virtual environment for Python dependencies and wheel installation, and in each new terminal session.
+
+### 5. Install Python Dependencies
+```bash
+sh scripts/install_python_pkgs.sh
+```
 
 ## DeepStream Libraries Installation
 1. Download DeepStream Libraries wheel file from NGC.
-    - Download wheel file from this NGC [link](https://catalog.ngc.nvidia.com/orgs/nvidia/resources/deepstream)
+    - Download wheel file from this NGC [link](https://catalog.ngc.nvidia.com/orgs/nvidia/resources/deepstream_libraries)
 
 2. Install DeepStream Libraries package.
     ```bash
-    pip3 install deepstream_libraries-1.1-cp310-cp310-linux_x86_64.whl
-    ```
-
-## DeepStream Libraries Repository Setup
-To run [sample apps](https://github.com/NVIDIA-AI-IOT/deepstream_libraries), follow below steps:
-1. Clone DeepStream Libraries repo.
-    ```
-    git clone https://github.com/NVIDIA-AI-IOT/deepstream_libraries.git
-    cd deepstream_libraries
-    ```
-2. Install dependencies.
-
-    Install all the dependent packages required by sample apps:
-    ```
-    sudo sh scripts/install_dependencies.sh
-    ```
-
-3. Download test files
-
-    Download images/videos to run sample apps:
-    ```
-    sh scripts/download_data.sh
+    pip3 install deepstream_libraries-1.2-cp312-cp312-linux_x86_64.whl
     ```
 
 ## Getting Started with DeepStream Libraries APIs
@@ -58,6 +75,7 @@ We can use DeepStream Libraries API's to create an application.
 Consider the below reference example:
 - Read an image from the given file path using NvImageCodec
 - Resize the image with specified dimensions and Cubic interpolation method using CVCUDA
+- Align output dimensions to ensure compatibility with nvImageCodec
 - Save the resized image using NvImageCodec
 
 ```python
@@ -74,11 +92,14 @@ inputImage = decoder.read("path/to/image.jpg")
 # Pass it to cvcuda using as_tensor
 nvcvInputTensor = cvcuda.as_tensor(inputImage, "HWC")
 
-# Resize with cvcuda to 320x240
+# Align output dimensions to 32-byte boundaries for nvImageCodec compatibility
+output_width, output_height, alignment = 320, 240 , 32
+aligned_width, aligned_height = ((output_width + alignment - 1) // alignment) * alignment , ((output_height + alignment - 1) // alignment) * alignment
+
+# Resize with cvcuda using aligned dimensions
 cvcuda_stream = cvcuda.Stream()
 with cvcuda_stream:
-    nvcvResizeTensor = cvcuda.resize(nvcvInputTensor, (320, 240, 3), cvcuda.Interp.CUBIC)
-    nvcvResizeTensor.cuda().__cuda_array_interface__
+    nvcvResizeTensor = cvcuda.resize(nvcvInputTensor,(aligned_height, aligned_width, 3), cvcuda.Interp.CUBIC)
 
 # Write with nvImageCodec
 encoder = nvimgcodec.Encoder()
@@ -99,8 +120,7 @@ encoder.write(output_image_path, nvimgcodec.as_image(nvcvResizeTensor.cuda(), cu
 
 ## Additional References and Applications
 For more references and application please refer to the below link:
-- [CVCUDA](https://github.com/CVCUDA/CV-CUDA/releases/tag/v0.10.1-beta)
-- [NvImageCodec](https://github.com/NVIDIA/nvImageCodec/releases/tag/v0.3.0)
-- [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/1.0.1/)
-- [PyNvVIdeoCodec Online Documents](https://docs.nvidia.com/video-technologies/pynvvideocodec/read-me/index.html)
+- [CVCUDA](https://github.com/CVCUDA/CV-CUDA/releases/tag/v0.15.0-beta)
+- [NvImageCodec](https://github.com/NVIDIA/nvImageCodec/releases/tag/v0.6.0)
+- [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/2.0.0/)
 - [Deepstream Libraries](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Libraries.html)

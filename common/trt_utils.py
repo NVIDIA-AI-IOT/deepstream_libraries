@@ -132,6 +132,9 @@ def setup_tensort_bindings(trt_model, batch_size, device_id, logger):
             if b_shape[0] == -1:
                 # We need to replace the -1 with the batch size.
                 b_shape[0] = batch_size
+            elif b_shape[0] == batch_size:
+                # The batch dimension is already present and matches our expected batch size
+                pass
             elif b_shape[0] == 1 and batch_size == 1:
                 # In this case where batch size is 1 and our binding already
                 # has it, we will assume it is the batch size dim and not

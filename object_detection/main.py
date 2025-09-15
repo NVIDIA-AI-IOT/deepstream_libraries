@@ -213,7 +213,7 @@ def main():
     parser.add_argument(
         "-c",
         "--confidence_threshold",
-        default=0.9,
+        default=0.4,
         type=float,
         help="The confidence threshold for filtering out the detected bounding boxes.",
     )

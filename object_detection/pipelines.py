@@ -205,9 +205,6 @@ class PostprocessorCvcuda:
     def __call__(self, raw_boxes_pyt, raw_scores_pyt, frame_nhwc):
 
         self.cvcuda_perf.push_range("postprocess.cvcuda")
-        if self.backend == "tensorrt":
-            raw_boxes_pyt = torch.reshape(raw_boxes_pyt,(raw_boxes_pyt.shape[0],-1,raw_boxes_pyt.shape[3],raw_boxes_pyt.shape[4]))
-            raw_scores_pyt = torch.reshape(raw_scores_pyt,(raw_scores_pyt.shape[0],-1,raw_scores_pyt.shape[3],raw_scores_pyt.shape[4]))
 
         # docs_tag: begin_call_filterbboxcvcuda
         self.cvcuda_perf.push_range("interpolate")

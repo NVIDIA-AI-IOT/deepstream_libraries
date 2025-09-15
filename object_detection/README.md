@@ -20,7 +20,7 @@ The application  logs comprehensive data throughout every operational phase. Upo
 - `--target_img_width`: Width of the images after resizing. Default is 960.
 - `--device_id`: ID of the CUDA device to use for processing. Default is 0.
 - `--backend`: Backend framework to use for inference (tensorflow or tensorrt). Default is tensorrt.
-- `--confidence_threshold`: Confidence threshold for filtering out detected bounding boxes. Default is 0.9.
+- `--confidence_threshold`: Confidence threshold for filtering out detected bounding boxes. Default is 0.4.
 - `--iou_threshold`: IoU threshold for Non-Maximum Suppression (NMS). Default is 0.2.
 - `--log_level`: Logging level (e.g., INFO, DEBUG). Default is info.
 
