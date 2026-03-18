@@ -11,16 +11,16 @@ All these packages are built against the same CUDA version and validated with th
   - [Ubuntu 24.04](https://releases.ubuntu.com/noble/)
 
 - **Python:**
-  - Python-3.12 (Should be pre-installed with Ubuntu 24.04)
+  - Python >=3.12,<3.15 (Should be pre-installed with Ubuntu 24.04)
 
 - **CUDA:**
-  - [CUDA Toolkit 12.8](https://developer.nvidia.com/cuda-12-8-0-download-archive)
+  - [CUDA Toolkit 13.1](https://developer.nvidia.com/cuda-13-1-0-download-archive)
 
 - **NVIDIA Driver:**
-  - [Nvidia Driver-570.133.20](https://www.nvidia.cn/drivers/details/242548/)
+  - [NVIDIA Driver 590.48.01](https://www.nvidia.cn/drivers/details/260076/)
 
 - **TensorRT:**
-  - [TensorRT-10.9](https://docs.nvidia.com/deeplearning/tensorrt/10.9.0/installing-tensorrt/overview.html)
+  - [TensorRT 10.14.1.48](https://docs.nvidia.com/deeplearning/tensorrt/10.14.1/installing-tensorrt/installing.html)
 
 ## DeepStream Libraries Repository Setup
 
@@ -66,7 +66,7 @@ sh scripts/install_python_pkgs.sh
 
 2. Install DeepStream Libraries package.
     ```bash
-    pip3 install deepstream_libraries-1.2-cp312-cp312-linux_x86_64.whl
+    pip3 install deepstream_libraries-1.3-cp312-cp312-linux_x86_64.whl
     ```
 
 ## Getting Started with DeepStream Libraries APIs
@@ -86,8 +86,11 @@ from nvidia import nvimgcodec
 # Create Decoder
 decoder = nvimgcodec.Decoder()
 
-# Read image with nvImageCodec
-inputImage = decoder.read("path/to/image.jpg")
+# Read image with nvImageCodec (using CodeStream API)
+with open("path/to/image.jpg", "rb") as f:
+    image_bytes = f.read()
+code_stream = nvimgcodec.CodeStream(image_bytes)
+inputImage = decoder.decode(code_stream)  # Returns single Image
 
 # Pass it to cvcuda using as_tensor
 nvcvInputTensor = cvcuda.as_tensor(inputImage, "HWC")
@@ -120,7 +123,11 @@ encoder.write(output_image_path, nvimgcodec.as_image(nvcvResizeTensor.cuda(), cu
 
 ## Additional References and Applications
 For more references and application please refer to the below link:
-- [CVCUDA](https://github.com/CVCUDA/CV-CUDA/releases/tag/v0.15.0-beta)
-- [NvImageCodec](https://github.com/NVIDIA/nvImageCodec/releases/tag/v0.6.0)
-- [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/2.0.0/)
+- [CVCUDA](https://github.com/CVCUDA/CV-CUDA/releases/tag/v0.16.0)
+- [NvImageCodec](https://github.com/NVIDIA/nvImageCodec/releases/tag/v0.7.0)
+- [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/2.1/)
 - [Deepstream Libraries](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Libraries.html)
+
+## Notes
+- **VPF (VideoProcessingFramework)**: The main VPF package is deprecated. PyNvVideoCodec (installed via wheel) is the modern replacement. PytorchNvCodec extension is available for PyTorch support. VPF installation failures are non-fatal as PyNvVideoCodec provides the required functionality.
+- **nvcv Compatibility**: A compatibility module (`common/nvcv.py`) is provided for legacy code that uses the `nvcv` API. This module maps `nvcv` calls to equivalent `cvcuda` functionality.
