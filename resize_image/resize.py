@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,11 @@ def resize_image(input_image_path, output_width, output_height):
     decoder = nvimgcodec.Decoder()
 
     # Read image with nvImageCodec
-    inputImage = decoder.read(input_image_path)
+    # New API: Create CodeStream from file bytes, then decode
+    with open(input_image_path, "rb") as f:
+        image_bytes = f.read()
+    code_stream = nvimgcodec.CodeStream(image_bytes)
+    inputImage = decoder.decode(code_stream)  # Single CodeStream returns single Image
     print(f"Reading image with nvImageCodec -> {input_image_path} ({inputImage.width}x{inputImage.height})")
 
     # Pass it to cvcuda using as_tensor

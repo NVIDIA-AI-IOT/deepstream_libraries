@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 ################################################################################
-# Copyright (c) 2025, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2025-2026, NVIDIA CORPORATION. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -68,15 +68,19 @@ apt-get update && apt-get install -y --no-install-recommends \
     mlocate && updatedb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ffmpeg and other libraries needed for VPF.
+# Install ffmpeg and other libraries needed for VPF and av package.
 # Note: We are not installing either libnv-encode or decode libraries here.
 apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libavfilter-dev \
     libavformat-dev \
     libavcodec-dev \
+    libavdevice-dev \
+    libavutil-dev \
+    libswscale-dev \
     libswresample-dev \
-    libavutil-dev\
+    pkg-config \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install libssl 1.1.1
@@ -97,7 +101,8 @@ apt-get update && apt-get install -y \
     ./nsight-systems-2024.6.1_2024.6.1.90-1_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install venv
+# Install venv and python3.12-venv
 apt-get update && apt-get install -y --no-install-recommends \
     python3-venv \
+    python3.12-venv \
     && rm -rf /var/lib/apt/lists/*
