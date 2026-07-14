@@ -14,13 +14,13 @@ All these packages are built against the same CUDA version and validated with th
   - Python >=3.12,<3.15 (Should be pre-installed with Ubuntu 24.04)
 
 - **CUDA:**
-  - [CUDA Toolkit 13.1](https://developer.nvidia.com/cuda-13-1-0-download-archive)
+  - [CUDA Toolkit 13.2](https://developer.nvidia.com/cuda-13-2-0-download-archive)
 
 - **NVIDIA Driver:**
-  - [NVIDIA Driver 590.48.01](https://www.nvidia.cn/drivers/details/260076/)
+  - [NVIDIA Driver 595.58.03](https://developer.nvidia.com/datacenter-driver-595-downloads)
 
 - **TensorRT:**
-  - [TensorRT 10.14.1.48](https://docs.nvidia.com/deeplearning/tensorrt/10.14.1/installing-tensorrt/installing.html)
+  - [TensorRT 10.16.0.72](https://docs.nvidia.com/deeplearning/tensorrt/10.16.0/installing-tensorrt/installing.html)
 
 ## DeepStream Libraries Repository Setup
 
@@ -61,12 +61,14 @@ sh scripts/install_python_pkgs.sh
 ```
 
 ## DeepStream Libraries Installation
-1. Download DeepStream Libraries wheel file from NGC.
-    - Download wheel file from this NGC [link](https://catalog.ngc.nvidia.com/orgs/nvidia/resources/deepstream_libraries)
+1. Download the DeepStream Libraries wheel file from the `artifacts/` directory in the [DeepStream repository release assets](https://github.com/NVIDIA/DeepStream/releases#release-v9.1.0).
+    - Wheel file: `artifacts/deepstream_libraries-1.4-cp312-cp312-linux_x86_64.whl`
+
+    Note: You can also download it from the [DeepStream v9.1 release assets](https://github.com/NVIDIA/DeepStream/releases/tag/v9.1.0).
 
 2. Install DeepStream Libraries package.
     ```bash
-    pip3 install deepstream_libraries-1.3-cp312-cp312-linux_x86_64.whl
+    pip3 install deepstream_libraries-1.4-cp312-cp312-linux_x86_64.whl
     ```
 
 ## Getting Started with DeepStream Libraries APIs
@@ -124,7 +126,7 @@ encoder.write(output_image_path, nvimgcodec.as_image(nvcvResizeTensor.cuda(), cu
 ## Additional References and Applications
 For more references and application please refer to the below link:
 - [CVCUDA](https://github.com/CVCUDA/CV-CUDA/releases/tag/v0.16.0)
-- [NvImageCodec](https://github.com/NVIDIA/nvImageCodec/releases/tag/v0.7.0)
+- [NvImageCodec](https://github.com/NVIDIA/nvImageCodec/releases/tag/v0.8.0)
 - [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/2.1/)
 - [Deepstream Libraries](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Libraries.html)
 

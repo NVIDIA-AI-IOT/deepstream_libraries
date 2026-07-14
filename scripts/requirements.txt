@@ -6,7 +6,6 @@ pycuda==2026.1
 nvtx==0.2.8
 tensorflow==2.19.0
 pandas==2.2.3
-matplotlib==3.7.4
-tensorrt==10.14.1.48.post1
+tensorrt==10.16.0.72
 Cython==3.0.10
 setuptools
